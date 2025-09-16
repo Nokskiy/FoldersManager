@@ -28,7 +28,7 @@ public class PathFinder
             paths.AddRange(GetAllFilesRecursive(partOfFileName,dir));
         });
 
-        return paths.Where(file => file.Contains(partOfFileName,StringComparison)).ToList();
+        return paths.Where(file => Path.GetFileName(file).Contains(partOfFileName,StringComparison)).ToList();
     }
 
     private bool CheckAccess(string path)
