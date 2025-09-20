@@ -17,7 +17,7 @@ public class PathFinder(DiskManager diskManager)
     {
         List<string> result = [];
 
-        if (path != null && Path.Exists(path))
+        if (path != null && !Path.Exists(path))
         {
             Console.WriteLine("Please enter the correct start path.\nExample: \"C:\\\"");
             Console.ReadLine();
