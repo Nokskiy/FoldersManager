@@ -1,7 +1,8 @@
 namespace FoldersManager;
 
-public class PathFinder
+public class PathFinder(DiskManager diskManager)
 {
+    private readonly DiskManager _diskManager = new DiskManager();
     private readonly EnumerationOptions _options = new EnumerationOptions
     {
         IgnoreInaccessible = true,
@@ -12,7 +13,18 @@ public class PathFinder
 
     private const StringComparison StringComparison = System.StringComparison.OrdinalIgnoreCase;
 
-    public List<string> GetAllFilesRecursive(string partOfFileName,string path)
+    public List<string> ScanDisks(string fileName,string? path)
+    {
+        List<string> result = [];
+        var paths = path == null ? _diskManager.GetDrivesList() : [path];
+
+        foreach (var p in paths)
+            result.AddRange(GetAllFilesRecursive(fileName, p));
+            
+        return result;
+    }
+    
+    private List<string> GetAllFilesRecursive(string fileName,string path)
     {
         List<string> paths = [];
 
@@ -23,12 +35,9 @@ public class PathFinder
 
         var dirs = Directory.EnumerateDirectories(path,"*", _options);
         
-        Parallel.ForEach(dirs, dir =>
-        {
-            paths.AddRange(GetAllFilesRecursive(partOfFileName,dir));
-        });
+        Parallel.ForEach(dirs, dir => paths.AddRange(GetAllFilesRecursive(fileName,dir)));
 
-        return paths.Where(file => Path.GetFileName(file).Contains(partOfFileName,StringComparison)).ToList();
+        return paths.Where(file => Path.GetFileName(file).Contains(fileName,StringComparison)).ToList();
     }
 
     private bool CheckAccess(string path)
