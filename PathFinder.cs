@@ -17,6 +17,13 @@ public class PathFinder(DiskManager diskManager)
     {
         List<string> result = [];
 
+        if (path != null && Path.Exists(path))
+        {
+            Console.WriteLine("Please enter the correct start path.\nExample: \"C:\\\"");
+            Console.ReadLine();
+            Environment.Exit(1);
+        }
+
         Parallel.ForEach(path == null ? _diskManager.GetDrivesList() : [path],
             p =>result.AddRange(GetAllFilesRecursive(fileName, p)));
         
