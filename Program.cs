@@ -14,7 +14,7 @@ internal abstract class Program
             return;
         }
 
-        var files = pathFinder.ScanDisks(args[0], args.Length > 1 ? args[1] : null);
+        var files = pathFinder.ScanDisks(args[0], args.Length > 1 ? args[2] : null);
 
         if (files.Count == 0)
         {
