@@ -16,11 +16,10 @@ public class PathFinder(DiskManager diskManager)
     public List<string> ScanDisks(string fileName,string? path)
     {
         List<string> result = [];
-        var paths = path == null ? _diskManager.GetDrivesList() : [path];
 
-        foreach (var p in paths)
-            result.AddRange(GetAllFilesRecursive(fileName, p));
-            
+        Parallel.ForEach(path == null ? _diskManager.GetDrivesList() : [path],
+            p =>result.AddRange(GetAllFilesRecursive(fileName, p)));
+        
         return result;
     }
     
@@ -29,18 +28,16 @@ public class PathFinder(DiskManager diskManager)
         List<string> paths = [];
 
         if (CheckAccess(path))
-            paths.AddRange(Directory.EnumerateFiles(path));
+            paths.AddRange(Directory.EnumerateFiles(path,$"*{fileName}*"));
         else
             return [];
-
-        var dirs = Directory.EnumerateDirectories(path,"*", _options);
         
-        Parallel.ForEach(dirs, dir => paths.AddRange(GetAllFilesRecursive(fileName,dir)));
+        Parallel.ForEach(Directory.EnumerateDirectories(path,"*", _options), dir => paths.AddRange(GetAllFilesRecursive(fileName,dir)));
 
-        return paths.Where(file => Path.GetFileName(file).Contains(fileName,StringComparison)).ToList();
+        return paths;
     }
 
-    private bool CheckAccess(string path)
+    private static bool CheckAccess(string path)
     {
         try
         {
